@@ -92,4 +92,4 @@ En este caso, ambos métodos convergen a un valor muy similar, lo que valida la 
 
 Autores: Sergio Uriel Bustamante, Max Emiliano Sotelo, Romina Moreno Ramos
 
-Proyecto académico de Métodos Numéricos
+
