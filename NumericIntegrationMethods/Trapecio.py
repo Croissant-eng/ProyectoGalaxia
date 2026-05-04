@@ -1,60 +1,39 @@
-def Trapecio(fx, Intervalos : list, n : int):
-    
+def trapecio_compuesto(fx, Intervalos: list, n: int) -> float:
     """
-    Esta función nos ayuda a calcular el área aproximada
-    de una integral que no tiene un valor exacto por el método de
-    integración numérica de la Regla del Trapecio.
+    Regla Compuesta del Trapecio para integración numérica.
     
-    Su fórmula es:
-    (h/2)[f(x0) + 2*f(x1) + 2*f(x2) + ... + 2*f(xn-1) + f(xn)]
-    
-    donde:
-    - h = (b - a) / n
-    - xi = a + i*h para i = 0, 1, 2, ..., n
+    Fórmula:
+        ∫[a,b] f(x) dx ≈ (h/2)[f(x₀) + 2·Σf(xᵢ) + f(xₙ)]
+        donde i = 1, 2, ..., n-1
     
     Parámetros:
     -----------
-    fx : function
-        Función a integrar. Debe aceptar un valor numérico y retornar un número.
+    fx : callable
+        Función a integrar
     Intervalos : list
-        Lista de dos elementos [a, b] que definen los límites de integración.
-        a : límite inferior
-        b : límite superior
+        [a, b] - Límites de integración
     n : int
-        Número de subintervalos a utilizar en la aproximación.
-        Mientras mayor sea n, más precisa será la aproximación.
+        Número de subintervalos
     
     Retorna:
     --------
     float
-        El valor aproximado del área bajo la curva (integral definida).
-    
-    Ejemplo:
-    --------
-    >>> f = lambda x: x**2
-    >>> resultado = trapecio(f, [0, 1], 100)
-    >>> print(f"{resultado:.6f}")
-    0.333350  # Aproximado a 1/3
-    
-    Notas:
-    ------
-    - El método del trapecio aproxima el área bajo la curva dividiéndola
-      en n trapecios y sumando sus áreas individuales.
-    - El error de aproximación es proporcional a h² (orden O(h²)).
+        Aproximación de la integral
     """
-
-    # Definimos las variables de A, xi y deltaX ya con su valor
-    Area = 0
-    xi = []
-    deltaX = (Intervalos[1]-Intervalos[0])/n
-
-    # Declaramos cada valor de xi
-    for i in range(0, n+1):
-        xn = Intervalos[0] + i * deltaX
-        xi.append(xn)
-
-    # Aproximamos el valor del area por el metodo de Trapecio
-    for i in range(n):
-        areaTrapecio = (deltaX / 2) * (fx(xi[i]) + fx(xi[i+1]))
-        Area += areaTrapecio
-    return Area
+    a = Intervalos[0]
+    b = Intervalos[1]
+    h = (b - a) / n
+    
+    # Generamos puntos xi
+    xi = [a + i * h for i in range(n + 1)]
+    
+    # Aplicamos fórmula compuesta del trapecio
+    suma = fx(xi[0]) + fx(xi[-1])  # f(x₀) + f(xₙ)
+    
+    # Suma de los puntos interiores con coeficiente 2
+    for i in range(1, n):
+        suma += 2 * fx(xi[i])
+    
+    area = (h / 2) * suma
+    
+    return area

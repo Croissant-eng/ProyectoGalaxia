@@ -1,90 +1,53 @@
-def Simpson(fx, Intervalos : list, n : int):
+def simpson_compuesto(fx, Intervalos: list, n: int) -> float:
     """
-    Calcula la integral definida de una función utilizando la Regla de Simpson 1/3.
+    Regla Compuesta de Simpson 1/3 para integración numérica.
     
-    Este método aproxima el área bajo la curva dividiendo el intervalo [a, b] en 'n'
-    subintervalos y evaluando la función en los extremos, puntos interiores y puntos
-    medios de cada subintervalo. Es significativamente más preciso que la regla del
-    trapecio para funciones suaves.
-    
-    Fórmula implementada:
-        ∫[a,b] f(x) dx ≈ ((b-a) / 6n) * [f(x₀) + 4Σf(xᵢ) + 2Σf(xᵢ) + f(xₙ)]
+    Fórmula:
+        ∫[a,b] f(x) dx ≈ (h/3)[f(x₀) + 4·Σf(xᵢ) + 2·Σf(xᵢ) + f(xₙ)]
         donde:
-        - x̄ = (xᵢ + xᵢ₊₁) / 2  (puntos medios)
-        - xᵢ = a + i*h,  h = (b-a)/n
+        - Primer sumatoria: i = 1, 3, 5, ..., n-1 (índices impares)
+        - Segunda sumatoria: i = 2, 4, 6, ..., n-2 (índices pares)
     
     Parámetros:
     -----------
     fx : callable
-        Función a integrar. Debe recibir un valor numérico (float) y retornar un float.
-    Intervalos : list[float, float]
-        Lista con dos elementos [a, b] que definen los límites de integración.
-        a : límite inferior
-        b : límite superior
+        Función a integrar
+    Intervalos : list
+        [a, b] - Límites de integración
     n : int
-        Número de subintervalos. Debe ser un entero par positivo.
+        Número de subintervalos (DEBE SER PAR)
     
     Retorna:
     --------
     float
-        Valor aproximado de la integral definida en el intervalo dado.
+        Aproximación de la integral
     
     Lanza:
     ------
     ValueError
-        Si 'n' no es un número par, ya que la Regla de Simpson 1/3 requiere
-        un número par de subintervalos para ajustar parábolas correctamente.
-    
-    Ejemplo:
-    --------
-    >>> import math
-    >>> f = lambda x: math.sin(x)
-    >>> Simpson(f, [0, math.pi], 10)
-    2.000109517...  # El valor exacto es 2.0
-    
-    Notas:
-    ------
-    - Esta implementación utiliza la forma equivalente con puntos medios, 
-      matemáticamente idéntica a la fórmula clásica: (h/3)[f₀ + 4f₁ + 2f₂ + ... + fₙ]
-    - El error de truncamiento es de orden O(h⁴), lo que garantiza mayor precisión
-      que el método del trapecio O(h²) con el mismo número de evaluaciones.
-    - Se recomienda usar n ≥ 10 para funciones con curvatura pronunciada.
+        Si n no es par
     """
-    
-    # Verificar que n sea par
     if n % 2 != 0:
-        raise ValueError('n debe ser par')
+        raise ValueError('n debe ser par para la Regla Compuesta de Simpson 1/3')
     
-    # Inicializar listas
-    xi = []
-    xmi = []
+    a = Intervalos[0]
+    b = Intervalos[1]
+    h = (b - a) / n
     
-    # Calcular h
-    h = (Intervalos[1] - Intervalos[0]) / n
+    # Generar puntos xi
+    xi = [a + i * h for i in range(n + 1)]
     
-    # Generar puntos xi (CORREGIDO)
-    for i in range(n + 1):
-        x_i = Intervalos[0] + i * h
-        xi.append(x_i)
+    # Aplicar fórmula compuesta de Simpson
+    suma = fx(xi[0]) + fx(xi[-1])  # f(x₀) + f(xₙ)
     
-    # Generar puntos medios
-    for i in range(n):
-        xm_i = (xi[i] + xi[i + 1]) / 2
-        xmi.append(xm_i)
+    # Puntos impares (i = 1, 3, 5, ...) con coeficiente 4
+    for i in range(1, n, 2):
+        suma += 4 * fx(xi[i])
     
-    # Evaluar f(x) en puntos interiores (i=1 hasta n-1)
-    fxi = [fx(xi[i]) for i in range(1, n)]
+    # Puntos pares (i = 2, 4, 6, ..., n-2) con coeficiente 2
+    for i in range(2, n - 1, 2):
+        suma += 2 * fx(xi[i])
     
-    # Evaluar f(x) en puntos medios
-    fxmi = [fx(xmi[i]) for i in range(n)]
+    area = (h / 3) * suma
     
-    # Calcular sumatorias
-    sum_xi = sum(fxi)
-    sum_xmi = sum(fxmi)
-    
-    # Aplicar fórmula de Simpson
-    AreaAprox = ((xi[-1] - xi[0]) / (6 * n)) * (
-        fx(xi[0]) + 4 * sum_xmi + 2 * sum_xi + fx(xi[-1])
-    )
-    
-    return AreaAprox
+    return area
