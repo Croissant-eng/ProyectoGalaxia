@@ -1,2 +1,2 @@
-from .Trapecio import Trapecio
-from .Simpson import Simpson
+from .Trapecio import trapecio_compuesto
+from .Simpson import simpson_compuesto
